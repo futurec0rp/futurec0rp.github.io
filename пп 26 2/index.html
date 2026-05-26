@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Nippon Stay — бронирование в Японии</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Helvetica Neue', 'Noto Sans', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: #1a2c3e;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Шапка */
+        .main-header {
+            background-color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.02);
+            padding: 16px 0;
+            border-bottom: 1px solid #eaeef3;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-area h1 {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #be1e2d, #e05a5a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-area p {
+            font-size: 12px;
+            color: #5b6f82;
+            margin-top: 4px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e4e;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #be1e2d;
+        }
+
+        .sign-in {
+            background-color: #f0f2f5;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+
+        /* Hero с фоном */
+        .hero-section {
+            position: relative;
+            background-image: url('img/jap.JPG');
+            background-size: cover;
+            background-position: center 30%;
+            background-repeat: no-repeat;
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 0;
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        }
+
+        .hero-sub {
+            font-size: 18px;
+            color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+            margin-bottom: 32px;
+        }
+
+        /* Форма поиска */
+        .search-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 48px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            padding: 24px 32px;
+            margin-top: 8px;
+        }
+
+        .search-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .search-field {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .search-field label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #2c3e4e;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .search-field input, .search-field select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 32px;
+            border: 1px solid #dce5ec;
+            background: #ffffff;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .search-field input:focus, .search-field select:focus {
+            outline: none;
+            border-color: #be1e2d;
+            box-shadow: 0 0 0 3px rgba(190,30,45,0.1);
+        }
+
+        .search-btn {
+            background-color: #be1e2d;
+            border: none;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 48px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover {
+            background-color: #9b1622;
+            transform: scale(0.97);
+        }
+
+        /* Преимущества */
+        .why-us {
+            padding: 64px 0 48px;
+            background: white;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 32px;
+        }
+
+        .benefit-card {
+            text-align: center;
+            padding: 0 12px;
+        }
+
+        .benefit-img {
+         width: 80px; 
+         height: 80px;
+         object-fit: cover;
+         border-radius: 32px;
+         display: block;
+         margin: 0 auto 20px auto;
+         background-color: #fee9eb; /* фон на случай прозрачности */
+         box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+        .benefit-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .benefit-card p {
+            color: #4f6f8f;
+            line-height: 1.5;
+        }
+
+        /* Акции */
+        .promo-section {
+            padding: 48px 0 64px;
+            background-color: #fefaf5;
+        }
+
+        .promo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+            gap: 16px;
+        }
+
+        .promo-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .view-link {
+            color: #be1e2d;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .promo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .promo-item {
+            background: white;
+            border-radius: 32px;
+            padding: 28px 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #f0e4d8;
+            transition: all 0.2s;
+        }
+
+        .promo-item:hover {
+            transform: translateY(-5px);
+            border-color: #ffcdb5;
+        }
+
+        .promo-tag {
+            background: #d94a4a;
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .promo-item h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .promo-desc {
+            color: #5f6f82;
+            margin: 12px 0;
+        }
+
+        .coupon-badge {
+            background: #eef2ff;
+            padding: 6px 12px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Блок extras — все карточки с одинаковым фоном */
+        .extras-section {
+            background: #ffffff;
+            padding: 56px 0 48px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 56px;
+        }
+
+        /* Единый стиль для всех трёх карточек */
+        .app-card,
+        .rental-card,
+        .discover-card {
+            background: #fee9eb;
+            border-radius: 44px;
+            padding: 32px 36px;
+            box-shadow: 0 10px 25px -8px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .app-card:hover,
+        .rental-card:hover,
+        .discover-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.12);
+        }
+
+        /* Текст внутри карточек */
+        .never-miss {
+            font-size: 14px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: #be1e2d;
+            margin-bottom: 12px;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #1a2c3e;
+        }
+
+        .app-sub {
+            font-size: 16px;
+            color: #2c4e6e;
+            margin-bottom: 16px;
+        }
+
+        .app-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 8px;
+            margin-bottom: 20px; /* добавляем отступ перед логотипом */
+        }
+
+        /* Логотип после кнопок, значительно увеличенный */
+        .app-logo {
+            display: block;
+            width: 100%;
+            max-width: 600px;   /* примерно в 3 раза больше предыдущего 200px */
+            height: auto;
+            margin: 0 auto;
+            margin-top: 10px;
+        }
+
+        .store-btn {
+            background: #111;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .store-btn:hover {
+            background: #2c2c2c;
+            transform: translateY(-2px);
+        }
+
+        .rental-title,
+        .discover-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #1a2c3e;
+        }
+
+        .rental-desc,
+        .discover-desc {
+            color: #2c4e6e;
+            margin-bottom: 32px;
+            font-size: 16px;
+        }
+
+        .btn-outline-red {
+            background: transparent;
+            border: 2px solid #be1e2d;
+            color: #be1e2d;
+            padding: 12px 28px;
+            border-radius: 48px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            width: fit-content;
+            transition: 0.2s;
+        }
+
+        .btn-outline-red:hover {
+            background: #be1e2d;
+            color: white;
+        }
+
+        /* Подписка */
+        .subscribe-block {
+            background: #11181f;
+            border-radius: 44px;
+            padding: 44px 40px;
+            color: white;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .subscribe-text h3 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .subscribe-text p {
+            color: #bbd4f0;
+        }
+
+        .subscribe-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #fff;
+            padding: 6px 6px 6px 20px;
+            border-radius: 80px;
+            align-items: center;
+        }
+
+        .subscribe-form input {
+            border: none;
+            padding: 12px 0;
+            font-size: 16px;
+            min-width: 220px;
+            outline: none;
+            background: transparent;
+        }
+
+        .subscribe-form button {
+            background: #be1e2d;
+            border: none;
+            color: white;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .subscribe-form button:hover {
+            background: #8f1521;
+        }
+
+        /* Футер */
+        .footer {
+            background-color: #11181f;
+            color: #cddfe7;
+            padding: 48px 0 24px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 18px;
+            font-size: 18px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            transition: opacity 0.2s;
+            cursor: pointer;
+        }
+
+        .footer-col li:hover {
+            opacity: 0.8;
+        }
+
+        .copyright {
+            text-align: center;
+            border-top: 1px solid #2a3a48;
+            padding-top: 28px;
+            font-size: 13px;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 900px) {
+            .container {
+                padding: 0 20px;
+            }
+            .hero-title {
+                font-size: 36px;
+            }
+            .hero-sub {
+                font-size: 16px;
+            }
+            .search-card {
+                border-radius: 32px;
+                padding: 20px;
+            }
+            .search-grid {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .search-btn {
+                width: 100%;
+                text-align: center;
+            }
+            .two-columns {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+            .subscribe-block {
+                flex-direction: column;
+                text-align: center;
+                padding: 32px;
+            }
+            .subscribe-form {
+                width: 100%;
+                flex-direction: column;
+                background: transparent;
+                padding: 0;
+                gap: 16px;
+            }
+            .subscribe-form input {
+                background: white;
+                border-radius: 60px;
+                padding: 14px 20px;
+                width: 100%;
+                min-width: auto;
+            }
+            .subscribe-form button {
+                width: 100%;
+            }
+            .app-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .store-btn {
+                justify-content: center;
+            }
+            .benefits-grid {
+                gap: 24px;
+            }
+            .promo-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            /* Увеличенный логотип на планшетах: чуть меньше */
+            .app-logo {
+                max-width: 500px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-section {
+                min-height: 400px;
+            }
+            .hero-title {
+                font-size: 28px;
+                line-height: 1.3;
+            }
+            .hero-sub {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+            .search-card {
+                padding: 16px;
+            }
+            .section-title {
+                font-size: 24px;
+                margin-bottom: 32px;
+            }
+            .app-card, .rental-card, .discover-card {
+                padding: 24px 20px;
+            }
+            .app-title, .rental-title, .discover-title {
+                font-size: 24px;
+            }
+            /* На мобильных логотип будет занимать почти всю ширину карточки, но с ограничением */
+            .app-logo {
+                max-width: 90%;
+                margin: 10px auto;
+            }
+            .subscribe-text h3 {
+                font-size: 24px;
+            }
+            .footer-grid {
+                gap: 24px;
+                text-align: center;
+            }
+            .nav-links {
+                justify-content: center;
+                width: 100%;
+                gap: 16px;
+            }
+            .header-flex {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 24px;
+            }
+            .search-field input, .search-field select {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+            .search-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Шапка -->
+<div class="main-header">
+    <div class="container header-flex">
+        <div class="logo-area">
+            <h1>Nippon Stay</h1>
+            <p>Ваше путешествие — наша страсть</p>
+        </div>
+        <div class="nav-links">
+            <a href="#">Отели</a>
+            <a href="#">Рёканы</a>
+            <a href="#">Предложения</a>
+            <a href="#">Участие</a>
+            <a href="#" class="sign-in">Войти</a>
+        </div>
+    </div>
+</div>
+
+<!-- Hero с поиском -->
+<div class="hero-section">
+    <div class="container">
+        <h2 class="hero-title">Исследуйте качество пребывания<br>в Японии и за её пределами</h2>
+        <p class="hero-sub">Незабываемые рёканы, городские отели и курорты</p>
+        <div class="search-card">
+            <div class="search-grid">
+                <div class="search-field">
+                    <label>Введите направление или название отеля</label>
+                    <input type="text" placeholder="Токио, Киото, Осака, Фудзи..." value="Киото, Япония">
+                </div>
+                <div class="search-field">
+                    <label>Заезд</label>
+                    <input type="date" value="2026-06-10">
+                </div>
+                <div class="search-field">
+                    <label>Выезд</label>
+                    <input type="date" value="2026-06-15">
+                </div>
+                <div class="search-field">
+                    <label>2 гостя за номер • 1 номер</label>
+                    <select>
+                        <option>2 гостя, 1 номер</option>
+                        <option>1 гость, 1 номер</option>
+                        <option>3 гостя, 1 номер</option>
+                        <option>4 гостя, 2 номера</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <button class="search-btn"> Поиск</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Преимущества -->
+<div class="why-us">
+    <div class="container">
+        <div class="section-title">Почему выбирают нас?</div>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <img src="img/1.JPG" alt="Ручной отбор" class="benefit-img">
+                <h3>Ручной отбор жилья</h3>
+                <p>Каждый рёкан, отель и дом проходят личную проверку нашей командой.</p>
+            </div>
+            <div class="benefit-card">
+                <img src="img/2.JPG" alt="Ручной отбор" class="benefit-img">
+                <h3>Широкий выбор</h3>
+                <p>Сравнивайте номера и тарифы в тысячах отелей и рёканов</p>
+            </div>
+            <div class="benefit-card">
+                <img src="img/3.JPG" alt="Ручной отбор" class="benefit-img">
+                <h3>Специальные предложения</h3>
+                <p>Эксклюзивные скидки и уникальные планы проживания</p>
+            </div>
+            <div class="benefit-card">
+                <img src="img/4.JPG" alt="Ручной отбор" class="benefit-img">
+                <h3>Привилегии для участников</h3>
+                <p>Зарегистрируйтесь бесплатно и получайте особые условия</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Акции -->
+<div class="promo-section">
+    <div class="container">
+        <div class="promo-header">
+            <h2>Акции и предложения</h2>
+            <a href="#" class="view-link">Все предложения →</a>
+        </div>
+        <div class="promo-cards">
+            <div class="promo-item">
+                <div class="promo-tag">РАСПРОДАЖА</div>
+                <h3>Скидка 25% на дополнительные номера</h3>
+                <p class="promo-desc">Купоны | Скидки</p>
+                <span class="coupon-badge">ВЕСЕННЯЯ АКЦИЯ</span>
+            </div>
+            <div class="promo-item">
+                <div class="promo-tag"> Ограниченное предложение</div>
+                <h3>Скидки на отели до 20%</h3>
+                <p class="promo-desc">Бронируйте до 1 июня · Избранные объекты</p>
+                <span class="coupon-badge"> ОГРАНИЧЕННО</span>
+            </div>
+            <div class="promo-item">
+                <div class="promo-tag">🇯🇵 Лучшие предложения месяца в Японии</div>
+                <h3>Экономьте больше в вашем следующем путешествии!</h3>
+                <p class="promo-desc">Отобранные рёканы и городские отели</p>
+                <span class="coupon-badge"> ЭКОНОМЬТЕ СЕЙЧАС</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Блоки с приложением, арендой, впечатлениями (одинаковый фон) -->
+<div class="extras-section">
+    <div class="container">
+        <div class="two-columns">
+            <!-- Карточка приложения: логотип ПОСЛЕ кнопок и увеличен -->
+            <div class="app-card">
+                <div class="never-miss">НЕ ПРОПУСТИТЕ ПРЕДЛОЖЕНИЕ</div>
+                <div class="app-title">Япония и не только</div>
+                <div class="app-sub">Скачайте приложение Nippon Stay здесь</div>
+                <div class="app-buttons">
+                    <a href="#" class="store-btn"> App Store</a>
+                    <a href="#" class="store-btn"> Google Play</a>
+                </div>
+                <!-- Логотип после кнопок, значительно увеличен -->
+                <img src="img/logo.png" alt="Nippon Stay" class="app-logo">
+            </div>
+            <!-- Правая колонка: аренда и впечатления -->
+            <div style="display: flex; flex-direction: column; gap: 28px;">
+                <div class="rental-card">
+                    <div class="rental-title">Ваш маршрут — ваш выбор. Арендуйте сейчас!</div>
+                    <div class="rental-desc">Выберите из широкого ассортимента автомобилей.</div>
+                    <a href="#" class="btn-outline-red">Аренда авто →</a>
+                </div>
+                <div class="discover-card">
+                    <div class="discover-title">Откройте для себя впечатления в Японии</div>
+                    <div class="discover-desc">Туры, билеты и мероприятия для идеальной поездки.</div>
+                    <a href="#" class="btn-outline-red">Забронировать →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Подписка -->
+        <div class="subscribe-block">
+            <div class="subscribe-text">
+                <div class="never-miss" style="color: #f9b17a;">НЕ ПРОПУСТИТЕ ПРЕДЛОЖЕНИЕ</div>
+                <h3>Подпишитесь на наши специальные предложения, и мы будем держать вас в курсе.</h3>
+                <p>Лучшие туристические предложения прямо в ваш почтовый ящик.</p>
+            </div>
+            <div class="subscribe-form">
+                <input type="email" placeholder="anyone@nippon.com" value="anyone@nippon.com">
+                <button type="button">Подписаться</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Футер -->
+<div class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>Nippon Stay</h4>
+                <ul>
+                    <li>О компании</li>
+                    <li>Карьера</li>
+                    <li>Пресса</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Поддержка</h4>
+                <ul>
+                    <li>Центр помощи</li>
+                    <li>Варианты отмены</li>
+                    <li>Ограничения на поездки</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Участие</h4>
+                <ul>
+                    <li>Баллы Nippon Stay</li>
+                    <li>Эксклюзивные льготы</li>
+                    <li>Бесплатная регистрация</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Подписывайтесь</h4>
+                <ul>
+                    <li>Instagram</li>
+                    <li>Twitter</li>
+                    <li>Facebook</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2026 Nippon Stay
+        </div>
+    </div>
+</div>
+</body>
+</html>
