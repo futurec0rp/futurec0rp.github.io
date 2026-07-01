@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dish Diary</title>
+  <!-- Шрифты -->
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ----- Палитра ----- */
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #388E3C;
+      --bg: #F7F9F8;
+      --card-bg: #FFFFFF;
+      --text: #2D3E3F;
+      --text-muted: #6B7A7B;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --font-heading: 'Alegreya', Georgia, serif;
+      --font-body: 'Lora', 'Helvetica Neue', Arial, sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ----- Шапка ----- */
+    .header {
+      background: var(--primary);
+      color: #fff;
+      padding: 0 24px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      min-height: 64px;
+    }
+    .logo a {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .logo span { background: rgba(255,255,255,0.2); padding:0 8px; border-radius:4px; }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1.2rem;
+    }
+    .nav > a {
+      color: rgba(255,255,255,0.85);
+      font-size: 0.95rem;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+    }
+    .nav > a:hover { color:#fff; border-bottom-color:#fff; }
+
+    .account-dropdown {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .account-dropdown .avatar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      background: rgba(255,255,255,0.15);
+      transition: 0.2s;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .account-dropdown .avatar:hover { background: rgba(255,255,255,0.25); }
+    .account-dropdown .avatar .arrow { font-size:0.7rem; margin-left:2px; }
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: var(--card-bg);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      min-width: 200px;
+      padding: 0.5rem 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      transition: opacity 0.2s, transform 0.2s, visibility 0s 0.2s;
+      z-index: 50;
+    }
+    .account-dropdown:hover .dropdown-menu,
+    .account-dropdown:focus-within .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      transition: opacity 0.2s, transform 0.2s, visibility 0s 0s;
+    }
+    .dropdown-menu a {
+      display: block;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.95rem;
+      color: var(--text);
+      transition: background 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .dropdown-menu a:hover { background: var(--bg); border-left-color: var(--primary); }
+
+    /* ----- Контейнер ----- */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 24px 60px;
+    }
+    .landing-section {
+      display: block;
+      margin-bottom: 4rem;
+      scroll-margin-top: 80px;
+    }
+
+    /* ----- ГЕРОЙ С ФОНОМ (из папки images/) ----- */
+    .hero {
+      background-image: url('images/background.jpg');
+      background-size: cover;
+      background-position: center;
+      border-radius: var(--radius);
+      padding: 4rem 3rem;
+      position: relative;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+    }
+    /* Затемнение */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.30) 100%);
+      border-radius: var(--radius);
+      z-index: 0;
+    }
+    .hero > div {
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      font-family: var(--font-heading);
+      font-size: 3rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.35);
+      margin-bottom: 0.3rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 1px 8px rgba(0,0,0,0.25);
+      max-width: 500px;
+      margin-bottom: 0.5rem;
+    }
+    .hero .btn {
+      background: #fff;
+      color: var(--primary-dark);
+      font-weight: 600;
+      display: inline-block;
+      padding: 0.6rem 2rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      transition: 0.2s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .hero .btn:hover { background:#f0f0f0; transform:scale(0.97); }
+
+    /* ----- Карточки ----- */
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 2rem 0 1.2rem;
+    }
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .card-grid > * { flex: 1 1 200px; }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      border: 1px solid #EAEFED;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.07); }
+
+    .recipe-card .thumb {
+      height: 140px;
+      background: #E9F0EE;
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .recipe-card .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .recipe-card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .recipe-card .meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 0.2rem 0;
+    }
+    .blog-card .date {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 0.3rem;
+    }
+    .btn-sm {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.3rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-sm:hover { background: var(--primary-dark); }
+
+    /* ----- Страницы (скрыты по умолчанию) ----- */
+    .page {
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+    .page:target {
+      display: block;
+    }
+    .page:target ~ #home {
+      display: none;
+    }
+    @keyframes fadeUp {
+      0% { opacity:0; transform:translateY(12px); }
+      100% { opacity:1; transform:translateY(0); }
+    }
+
+    .recipe-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .recipe-detail-grid .thumb-large {
+      height: 240px;
+      background: #E9F0EE;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .recipe-detail-grid .thumb-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .ingredient-list {
+      list-style: none;
+      padding: 0;
+    }
+    .ingredient-list li {
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #ECF1EF;
+      display: flex;
+      justify-content: space-between;
+    }
+    .step-list {
+      list-style: decimal;
+      padding-left: 1.5rem;
+    }
+    .step-list li { margin-bottom:0.6rem; }
+    .badge-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.5rem 0 1rem;
+    }
+    .badge {
+      background: var(--bg);
+      padding: 0.15rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Планировщик */
+    .planner-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+      gap: 1rem;
+    }
+    .planner-day { min-height: 150px; }
+    .planner-meal {
+      font-size: 0.85rem;
+      padding: 0.2rem 0;
+      border-bottom: 1px solid #ecf1ef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .planner-meal .remove-planner {
+      background: none;
+      border: none;
+      color: #d32f2f;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    /* Список покупок */
+    .shopping-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #ecf1ef;
+    }
+    .shopping-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+    .shopping-item .purchased {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    /* Переключатель */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+    .switch input { opacity:0; width:0; height:0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top:0; left:0; right:0; bottom:0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 22px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    /* ----- Адаптив ----- */
+    @media (max-width: 768px) {
+      .header-inner { flex-direction:column; align-items:stretch; gap:0.4rem; padding:0.6rem 0; }
+      .nav { justify-content:center; gap:0.5rem 0.8rem; }
+      .hero { padding:2.5rem 1.5rem; min-height:240px; }
+      .hero h1 { font-size:2rem; }
+      .recipe-detail-grid { grid-template-columns:1fr; }
+      .container { padding:100px 16px 40px; }
+      .landing-section { scroll-margin-top:120px; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size:1.8rem; }
+      .hero .btn { padding:0.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== ШАПКА ========== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo"><a href="#home"><span>Dish Diary</span></a></div>
+      <nav class="nav">
+        <a href="#section-home">Главная</a>
+        <a href="#section-recipes">Рецепты</a>
+        <a href="#section-blog">Блог</a>
+        <a href="#section-planner">Планировщик</a>
+        <div class="account-dropdown">
+          <div class="avatar">User <span class="arrow">▼</span></div>
+          <div class="dropdown-menu">
+            <a href="#shopping">Список покупок</a>
+            <a href="#favorites">Избранное</a>
+            <a href="#my-recipes">Мои рецепты</a>
+            <a href="#settings">Настройки</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========== ОСНОВНОЙ КОНТЕЙНЕР ========== -->
+  <main class="container">
+
+    <!-- ===== ОБЁРТКА ЛЕНДИНГА ===== -->
+    <div id="home">
+
+      <!-- Секция: Главная -->
+      <section id="section-home" class="landing-section">
+        <div class="hero">
+          <div>
+            <h1>Добро пожаловать!</h1>
+            <p>Найдите вдохновение для вкусного дня</p>
+            <a href="#section-recipes" class="btn">Смотреть рецепты</a>
+          </div>
+        </div>
+
+        <h2 class="section-title">Популярные рецепты</h2>
+        <div class="card-grid">
+          <!-- 1 -->
+          <div class="card recipe-card" data-recipe-id="chicken">
+            <div class="thumb"><img src="images/chiken.jpg" alt="Курица" loading="lazy" /></div>
+            <h4>Курица с лимоном</h4>
+            <div class="meta"><span>Основные блюда</span><span>25 мин</span></div>
+            <a href="#recipe-chicken" class="btn-sm">Подробнее</a>
+          </div>
+          <!-- 2 -->
+          <div class="card recipe-card" data-recipe-id="shrimp">
+            <div class="thumb"><img src="images/Shrimps.jpg" alt="Креветки" loading="lazy" /></div>
+            <h4>Капуста с креветками</h4>
+            <div class="meta"><span>Основные блюда</span><span>30 мин</span></div>
+            <a href="#recipe-shrimp" class="btn-sm">Подробнее</a>
+          </div>
+          <!-- 3 -->
+          <div class="card recipe-card" data-recipe-id="avocado">
+            <div class="thumb"><img src="images/avo.jpg" alt="Авокадо" loading="lazy" /></div>
+            <h4>Тост с авокадо</h4>
+            <div class="meta"><span>Завтраки</span><span>15 мин</span></div>
+            <a href="#recipe-avocado" class="btn-sm">Подробнее</a>
+          </div>
+        </div>
+
+        <h2 class="section-title">Последние статьи из блога</h2>
+        <div class="card-grid">
+          <div class="card blog-card">
+            <h4>5 быстрых завтраков на каждый день</h4>
+            <p>Начните день правильно с нашей подборкой простых и полезных завтраков.</p>
+            <div class="date">12 мая 2024</div>
+          </div>
+          <div class="card blog-card">
+            <h4>Как питаться сезонно весной</h4>
+            <p>Польза сезонных продуктов и простые рецепты для вашего стола.</p>
+            <div class="date">8 мая 2024</div>
+          </div>
+          <div class="card blog-card">
+            <h4>Здоровые десерты без выпечки</h4>
+            <p>Сладкое может быть полезным! Попробуйте эти простые рецепты.</p>
+            <div class="date">5 мая 2024</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Секция: Рецепты (10 карточек) -->
+      <section id="section-recipes" class="landing-section">
+        <h2 class="section-title">Все рецепты</h2>
+        <div class="card-grid">
+          <div class="card recipe-card" data-recipe-id="chicken">
+            <div class="thumb"><img src="images/chiken.jpg" alt="Курица" loading="lazy" /></div>
+            <h4>Курица с лимоном</h4>
+            <div class="meta"><span>Основные блюда</span><span>25 мин</span></div>
+            <a href="#recipe-chicken" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="shrimp">
+            <div class="thumb"><img src="images/Shrimps.jpg" alt="Креветки" loading="lazy" /></div>
+            <h4>Капуста с креветками</h4>
+            <div class="meta"><span>Основные блюда</span><span>30 мин</span></div>
+            <a href="#recipe-shrimp" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="avocado">
+            <div class="thumb"><img src="images/avo.jpg" alt="Авокадо" loading="lazy" /></div>
+            <h4>Тост с авокадо</h4>
+            <div class="meta"><span>Завтраки</span><span>15 мин</span></div>
+            <a href="#recipe-avocado" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="chicken-soup">
+            <div class="thumb"><img src="images/soup.jpg" alt="Суп" loading="lazy" /></div>
+            <h4>Куриный суп с лапшой</h4>
+            <div class="meta"><span>Супы</span><span>45 мин</span></div>
+            <a href="#recipe-chicken-soup" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="salad">
+            <div class="thumb"><img src="images/salad.jpg" alt="Салат" loading="lazy" /></div>
+            <h4>Салат с киноа и овощами</h4>
+            <div class="meta"><span>Салаты</span><span>20 мин</span></div>
+            <a href="#recipe-salad" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="salmon">
+            <div class="thumb"><img src="images/Salmon.jpg" alt="Лосось" loading="lazy" /></div>
+            <h4>Запечённый лосось с овощами</h4>
+            <div class="meta"><span>Основные блюда</span><span>35 мин</span></div>
+            <a href="#recipe-salmon" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="pasta">
+            <div class="thumb"><img src="images/pasta.jpg" alt="Паста" loading="lazy" /></div>
+            <h4>Паста с креветками и шпинатом</h4>
+            <div class="meta"><span>Основные блюда</span><span>30 мин</span></div>
+            <a href="#recipe-pasta" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="cookies">
+            <div class="thumb"><img src="images/cookies.jpg" alt="Печенье" loading="lazy" /></div>
+            <h4>Овсяное печенье с шоколадом</h4>
+            <div class="meta"><span>Десерты</span><span>35 мин</span></div>
+            <a href="#recipe-cookies" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="burger">
+            <div class="thumb"><img src="images/burger.jpg" alt="Бургер" loading="lazy" /></div>
+            <h4>Веганский бургер с фалафелем</h4>
+            <div class="meta"><span>Основные блюда</span><span>40 мин</span></div>
+            <a href="#recipe-burger" class="btn-sm">Подробнее</a>
+          </div>
+          <div class="card recipe-card" data-recipe-id="fruit">
+            <div class="thumb"><img src="images/fruit.jpg" alt="Фрукты" loading="lazy" /></div>
+            <h4>Фруктовый салат с мятой</h4>
+            <div class="meta"><span>Десерты</span><span>10 мин</span></div>
+            <a href="#recipe-fruit-salad" class="btn-sm">Подробнее</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Секция: Блог -->
+      <section id="section-blog" class="landing-section">
+        <h2 class="section-title">Кулинарный блог</h2>
+        <div class="card-grid">
+          <div class="card blog-card">
+            <h4>5 быстрых завтраков на каждый день</h4>
+            <p>Начните день правильно с нашей подборкой простых и полезных завтраков.</p>
+            <div class="date">Автор: User · 12 мая 2024</div>
+          </div>
+          <div class="card blog-card">
+            <h4>Как питаться сезонно весной</h4>
+            <p>Польза сезонных продуктов и простые рецепты для вашего стола.</p>
+            <div class="date">Автор: Мария · 8 мая 2024</div>
+          </div>
+          <div class="card blog-card">
+            <h4>Здоровые десерты без выпечки</h4>
+            <p>Сладкое может быть полезным! Попробуйте эти простые рецепты.</p>
+            <div class="date">Автор: Алексей · 5 мая 2024</div>
+          </div>
+          <div class="card blog-card">
+            <h4>Топ-10 специй для здоровья</h4>
+            <p>Как улучшить вкус блюд и укрепить иммунитет.</p>
+            <div class="date">Автор: Елена · 2 мая 2024</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Секция: Планировщик -->
+      <section id="section-planner" class="landing-section">
+        <h2 class="section-title">Планировщик меню на неделю</h2>
+        <p style="color:var(--text-muted); margin-bottom:1.5rem;">Выберите блюда на каждый день. Данные сохраняются автоматически.</p>
+        <div class="planner-grid" id="plannerGrid">
+          <!-- Рендерится через JS -->
+        </div>
+      </section>
+
+    </div> <!-- /#home -->
+
+    <!-- ===== СТРАНИЦЫ АККАУНТА ===== -->
+    <section id="shopping" class="page">
+      <h2>Список покупок</h2>
+      <p>Ваш список продуктов, сформированный из рецептов.</p>
+      <div class="shopping-list-container" id="shoppingListContainer"></div>
+      <a href="#home" class="btn-sm" style="margin-top:1rem;">← На главную</a>
+    </section>
+
+    <section id="favorites" class="page">
+      <h2>Избранное</h2>
+      <p>Ваши любимые рецепты.</p>
+      <div class="card-grid" id="favoritesGrid"></div>
+      <a href="#home" class="btn-sm" style="margin-top:1rem;">← На главную</a>
+    </section>
+
+    <section id="my-recipes" class="page">
+      <h2>Мои рецепты</h2>
+      <p>Рецепты, которые вы создали.</p>
+      <div class="card-grid">
+        <div class="card recipe-card">
+          <div class="thumb"><img src="images/salad.jpg" alt="Салат" loading="lazy" /></div>
+          <h4>Салат с киноа и овощами</h4>
+          <div class="meta"><span>Салаты</span><span>20 мин</span></div>
+          <a href="#recipe-salad" class="btn-sm">Подробнее</a>
+        </div>
+        <div class="card recipe-card">
+          <div class="thumb"><img src="images/cookies.jpg" alt="Печенье" loading="lazy" /></div>
+          <h4>Овсяное печенье с шоколадом</h4>
+          <div class="meta"><span>Десерты</span><span>35 мин</span></div>
+          <a href="#recipe-cookies" class="btn-sm">Подробнее</a>
+        </div>
+      </div>
+      <a href="#home" class="btn-sm" style="margin-top:1rem;">← На главную</a>
+    </section>
+
+    <section id="settings" class="page">
+      <h2>Настройки аккаунта</h2>
+      <p>Редактирование профиля, тема и т.д.</p>
+      <div class="card" style="max-width:400px;">
+        <div style="display:flex; justify-content:space-between; padding:0.6rem 0; border-bottom:1px solid #ecf1ef;">
+          <span>Тёмная тема</span>
+          <label class="switch"><input type="checkbox" /><span class="slider round"></span></label>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:0.6rem 0; border-bottom:1px solid #ecf1ef;">
+          <span>Уведомления</span>
+          <label class="switch"><input type="checkbox" checked /><span class="slider round"></span></label>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:0.6rem 0;">
+          <span>Язык</span>
+          <select style="padding:0.2rem 0.6rem; border-radius:6px; border:1px solid #d0dbd8;">
+            <option>Русский</option>
+            <option>Английский</option>
+          </select>
+        </div>
+      </div>
+      <a href="#home" class="btn-sm" style="margin-top:1rem;">← На главную</a>
+    </section>
+
+    <!-- ===== ДЕТАЛЬНЫЕ СТРАНИЦЫ РЕЦЕПТОВ ===== -->
+    <!-- 1. Курица -->
+    <section id="recipe-chicken" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/chiken.jpg" alt="Курица" /></div>
+          <div class="badge-group">
+            <span class="badge">Основные блюда</span>
+            <span class="badge">⏱ 25 мин</span>
+            <span class="badge">🍽 4 порции</span>
+          </div>
+          <p>Сочное куриное филе, маринованное в лимонном соке с чесноком и розмарином.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Куриное филе</span> <span>600 г</span></li>
+            <li><span>Лимон</span> <span>1 шт</span></li>
+            <li><span>Чеснок</span> <span>3 зубчика</span></li>
+            <li><span>Оливковое масло</span> <span>2 ст.л.</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Смешайте сок лимона, чеснок, масло и специи.</li>
+            <li>Замаринуйте курицу на 30 минут.</li>
+            <li>Обжарьте филе по 5 минут с каждой стороны.</li>
+            <li>Доведите до готовности в духовке при 180°C (10 минут).</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="chicken">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Креветки -->
+    <section id="recipe-shrimp" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/Shrimps.jpg" alt="Креветки" /></div>
+          <div class="badge-group">
+            <span class="badge">Основные блюда</span>
+            <span class="badge">⏱ 30 мин</span>
+            <span class="badge">🍽 3 порции</span>
+          </div>
+          <p>Нежные креветки с капустой и пряностями, подаются с рисом.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Креветки</span> <span>400 г</span></li>
+            <li><span>Капуста</span> <span>300 г</span></li>
+            <li><span>Чеснок</span> <span>2 зубчика</span></li>
+            <li><span>Соевый соус</span> <span>3 ст.л.</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Нашинкуйте капусту, обжарьте с чесноком.</li>
+            <li>Добавьте креветки, жарьте 3–4 минуты.</li>
+            <li>Влейте соевый соус, прогрейте 2 минуты.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="shrimp">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Авокадо -->
+    <section id="recipe-avocado" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/avo.jpg" alt="Авокадо" /></div>
+          <div class="badge-group">
+            <span class="badge">Завтраки</span>
+            <span class="badge">⏱ 15 мин</span>
+            <span class="badge">🍽 2 порции</span>
+          </div>
+          <p>Хрустящий тост с нежным авокадо и яйцом пашот.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Хлеб</span> <span>2 ломтика</span></li>
+            <li><span>Авокадо</span> <span>1 шт</span></li>
+            <li><span>Яйца</span> <span>2 шт</span></li>
+            <li><span>Лимонный сок</span> <span>1 ч.л.</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Поджарьте хлеб.</li>
+            <li>Разомните авокадо с солью и лимонным соком.</li>
+            <li>Сварите яйца пашот.</li>
+            <li>Соберите тост: авокадо, яйцо, перец.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="avocado">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Суп -->
+    <section id="recipe-chicken-soup" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/soup.jpg" alt="Суп" /></div>
+          <div class="badge-group">
+            <span class="badge">Супы</span>
+            <span class="badge">⏱ 45 мин</span>
+            <span class="badge">🍽 6 порций</span>
+          </div>
+          <p>Домашний куриный суп с лапшой – согревающее блюдо.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Курица</span> <span>500 г</span></li>
+            <li><span>Лапша</span> <span>150 г</span></li>
+            <li><span>Морковь</span> <span>1 шт</span></li>
+            <li><span>Лук</span> <span>1 шт</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Варите курицу 30 минут.</li>
+            <li>Добавьте лук и морковь, варите 10 минут.</li>
+            <li>Положите лапшу, варите до готовности.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="chicken-soup">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Салат -->
+    <section id="recipe-salad" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/salad.jpg" alt="Салат" /></div>
+          <div class="badge-group">
+            <span class="badge">Салаты</span>
+            <span class="badge">⏱ 20 мин</span>
+            <span class="badge">🍽 4 порции</span>
+          </div>
+          <p>Лёгкий салат с киноа, овощами и лимонной заправкой.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Киноа</span> <span>200 г</span></li>
+            <li><span>Огурец</span> <span>1 шт</span></li>
+            <li><span>Помидоры черри</span> <span>200 г</span></li>
+            <li><span>Салат</span> <span>100 г</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Отварите киноа, остудите.</li>
+            <li>Нарежьте овощи.</li>
+            <li>Смешайте все ингредиенты, заправьте маслом.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="salad">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Лосось -->
+    <section id="recipe-salmon" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/Salmon.jpg" alt="Лосось" /></div>
+          <div class="badge-group">
+            <span class="badge">Основные блюда</span>
+            <span class="badge">⏱ 35 мин</span>
+            <span class="badge">🍽 2 порции</span>
+          </div>
+          <p>Нежный лосось с брокколи и помидорами, запечённый с лимоном.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Филе лосося</span> <span>400 г</span></li>
+            <li><span>Брокколи</span> <span>200 г</span></li>
+            <li><span>Помидоры черри</span> <span>200 г</span></li>
+            <li><span>Лимон</span> <span>1 шт</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Разогрейте духовку до 200°C.</li>
+            <li>Выложите лосось, брокколи и помидоры.</li>
+            <li>Сбрызните маслом и лимонным соком.</li>
+            <li>Запекайте 20–25 минут.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="salmon">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Паста -->
+    <section id="recipe-pasta" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/pasta.jpg" alt="Паста" /></div>
+          <div class="badge-group">
+            <span class="badge">Основные блюда</span>
+            <span class="badge">⏱ 30 мин</span>
+            <span class="badge">🍽 3 порции</span>
+          </div>
+          <p>Сливочная паста с креветками и шпинатом.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Паста</span> <span>300 г</span></li>
+            <li><span>Креветки</span> <span>300 г</span></li>
+            <li><span>Шпинат</span> <span>150 г</span></li>
+            <li><span>Сливки</span> <span>200 мл</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Сварите пасту.</li>
+            <li>Обжарьте креветки с чесноком.</li>
+            <li>Добавьте шпинат, затем сливки.</li>
+            <li>Смешайте с пастой.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="pasta">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Печенье -->
+    <section id="recipe-cookies" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/cookies.jpg" alt="Печенье" /></div>
+          <div class="badge-group">
+            <span class="badge">Десерты</span>
+            <span class="badge">⏱ 35 мин</span>
+            <span class="badge">🍽 12 шт</span>
+          </div>
+          <p>Хрустящее овсяное печенье с шоколадом.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Овсяные хлопья</span> <span>200 г</span></li>
+            <li><span>Мука</span> <span>150 г</span></li>
+            <li><span>Масло</span> <span>100 г</span></li>
+            <li><span>Шоколад</span> <span>100 г</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Растопите масло, смешайте с сахаром и яйцом.</li>
+            <li>Добавьте муку, овсянку и шоколад.</li>
+            <li>Выпекайте 15 минут при 180°C.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="cookies">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Бургер -->
+    <section id="recipe-burger" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/burger.jpg" alt="Бургер" /></div>
+          <div class="badge-group">
+            <span class="badge">Основные блюда</span>
+            <span class="badge">⏱ 40 мин</span>
+            <span class="badge">🍽 2 порции</span>
+          </div>
+          <p>Веганский бургер с котлетой из фалафеля.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Нут</span> <span>200 г</span></li>
+            <li><span>Булочки</span> <span>2 шт</span></li>
+            <li><span>Овощи</span> <span>для подачи</span></li>
+            <li><span>Тахини</span> <span>для соуса</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Измельчите нут с луком и зеленью.</li>
+            <li>Сформируйте котлеты, обжарьте.</li>
+            <li>Соберите бургер.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="burger">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Фруктовый салат -->
+    <section id="recipe-fruit-salad" class="page">
+      <a href="#section-recipes" class="btn-sm" style="margin-bottom:1rem;">← Назад</a>
+      <div class="recipe-detail-grid">
+        <div>
+          <div class="thumb-large"><img src="images/fruit.jpg" alt="Фрукты" /></div>
+          <div class="badge-group">
+            <span class="badge">Десерты</span>
+            <span class="badge">⏱ 10 мин</span>
+            <span class="badge">🍽 4 порции</span>
+          </div>
+          <p>Свежие фрукты с мятой и мёдом.</p>
+          <h4>Ингредиенты</h4>
+          <ul class="ingredient-list">
+            <li><span>Клубника</span> <span>200 г</span></li>
+            <li><span>Банан</span> <span>1 шт</span></li>
+            <li><span>Апельсин</span> <span>1 шт</span></li>
+            <li><span>Мята</span> <span>по вкусу</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Пошаговый рецепт</h4>
+          <ol class="step-list">
+            <li>Нарежьте фрукты.</li>
+            <li>Добавьте мяту.</li>
+            <li>Заправьте мёдом и соком лайма.</li>
+          </ol>
+          <button class="btn-sm add-to-plan" data-recipe-id="fruit">Добавить в план</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer style="text-align:center; padding:2rem 1rem; color:var(--text-muted); border-top:1px solid #dbe5e2; max-width:1280px; margin:0 auto;">
+    <p style="font-family:var(--font-heading); font-size:1.1rem;">Dish Diary</p>
+  </footer>
+
+  <!-- ========== JAVASCRIPT ========== -->
+  <script>
+    (function() {
+      'use strict';
+
+      const STORAGE = {
+        favorites: 'dish_favorites',
+        planner: 'dish_planner',
+        shopping: 'dish_shopping',
+      };
+
+      function getFavorites() {
+        return JSON.parse(localStorage.getItem(STORAGE.favorites)) || [];
+      }
+      function saveFavorites(list) {
+        localStorage.setItem(STORAGE.favorites, JSON.stringify(list));
+      }
+
+      function getPlanner() {
+        return JSON.parse(localStorage.getItem(STORAGE.planner)) || [];
+      }
+      function savePlanner(list) {
+        localStorage.setItem(STORAGE.planner, JSON.stringify(list));
+      }
+
+      function getShopping() {
+        return JSON.parse(localStorage.getItem(STORAGE.shopping)) || [];
+      }
+      function saveShopping(list) {
+        localStorage.setItem(STORAGE.shopping, JSON.stringify(list));
+      }
+
+      function getRecipeTitle(recipeId) {
+        const card = document.querySelector(`.recipe-card[data-recipe-id="${recipeId}"]`);
+        if (card) {
+          const titleEl = card.querySelector('h4');
+          return titleEl ? titleEl.textContent : recipeId;
+        }
+        return recipeId;
+      }
+
+      // --- Избранное ---
+      function toggleFavorite(recipeId, button) {
+        let favorites = getFavorites();
+        const index = favorites.indexOf(recipeId);
+        if (index === -1) {
+          favorites.push(recipeId);
+          button.textContent = '❤️';
+        } else {
+          favorites.splice(index, 1);
+          button.textContent = '🤍';
+        }
+        saveFavorites(favorites);
+      }
+
+      function renderFavorites() {
+        const container = document.getElementById('favoritesGrid');
+        if (!container) return;
+        const favorites = getFavorites();
+        if (favorites.length === 0) {
+          container.innerHTML = '<p class="text-muted">Нет избранных рецептов.</p>';
+          return;
+        }
+        container.innerHTML = '';
+        favorites.forEach(id => {
+          const card = document.querySelector(`.recipe-card[data-recipe-id="${id}"]`);
+          if (card) {
+            const clone = card.cloneNode(true);
+            const btn = clone.querySelector('.btn-favorite');
+            if (btn) btn.remove();
+            container.appendChild(clone);
+          }
+        });
+      }
+
+      // --- Планировщик ---
+      function addToPlanner(recipeId, day, mealType) {
+        const planner = getPlanner();
+        const entry = { id: Date.now() + Math.random(), recipeId, day, mealType: mealType || 'Обед' };
+        planner.push(entry);
+        savePlanner(planner);
+        renderPlanner();
+        generateShoppingList();
+        showNotification('Рецепт добавлен в план!');
+      }
+
+      function removeFromPlanner(entryId) {
+        let planner = getPlanner();
+        planner = planner.filter(item => item.id !== entryId);
+        savePlanner(planner);
+        renderPlanner();
+        generateShoppingList();
+      }
+
+      function renderPlanner() {
+        const grid = document.getElementById('plannerGrid');
+        if (!grid) return;
+        const planner = getPlanner();
+        const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+        let html = '';
+        days.forEach(day => {
+          const meals = planner.filter(item => item.day === day);
+          html += `<div class="card planner-day"><h4>${day}</h4>`;
+          if (meals.length === 0) {
+            html += `<p class="text-muted">Нет блюд</p>`;
+          } else {
+            meals.forEach(meal => {
+              html += `
+                <div class="planner-meal">
+                  <span><strong>${meal.mealType}:</strong> ${getRecipeTitle(meal.recipeId)}</span>
+                  <button class="remove-planner" data-entry-id="${meal.id}">✕</button>
+                </div>
+              `;
+            });
+          }
+          html += '</div>';
+        });
+        grid.innerHTML = html;
+        document.querySelectorAll('.remove-planner').forEach(btn => {
+          btn.addEventListener('click', function() {
+            removeFromPlanner(parseFloat(this.dataset.entryId));
+          });
+        });
+      }
+
+      // --- Список покупок ---
+      function generateShoppingList() {
+        const planner = getPlanner();
+        const map = {};
+        planner.forEach(item => {
+          const ingredients = getIngredientsForRecipe(item.recipeId);
+          ingredients.forEach(ing => {
+            const key = ing.name.toLowerCase();
+            if (!map[key]) {
+              map[key] = { id: key, name: ing.name, quantity: ing.qty, category: ing.category || 'Прочее', purchased: false };
+            }
+          });
+        });
+        saveShopping(Object.values(map));
+        renderShoppingList();
+      }
+
+      function getIngredientsForRecipe(recipeId) {
+        const list = {
+          chicken: [{ name: 'Куриное филе', qty: '500 г', category: 'Мясо' }],
+          shrimp: [{ name: 'Креветки', qty: '300 г', category: 'Морепродукты' }],
+          avocado: [{ name: 'Авокадо', qty: '2 шт', category: 'Овощи' }],
+          'chicken-soup': [{ name: 'Курица', qty: '400 г', category: 'Мясо' }, { name: 'Лапша', qty: '200 г', category: 'Бакалея' }],
+          salad: [{ name: 'Киноа', qty: '200 г', category: 'Бакалея' }, { name: 'Огурец', qty: '1 шт', category: 'Овощи' }],
+          salmon: [{ name: 'Лосось', qty: '400 г', category: 'Рыба' }],
+          pasta: [{ name: 'Паста', qty: '300 г', category: 'Бакалея' }, { name: 'Креветки', qty: '200 г', category: 'Морепродукты' }],
+          cookies: [{ name: 'Овсяные хлопья', qty: '200 г', category: 'Бакалея' }],
+          burger: [{ name: 'Нут', qty: '200 г', category: 'Бакалея' }],
+          fruit: [{ name: 'Фрукты', qty: '400 г', category: 'Фрукты' }],
+        };
+        return list[recipeId] || [{ name: 'Продукты', qty: '1 порция', category: 'Прочее' }];
+      }
+
+      function renderShoppingList() {
+        const container = document.getElementById('shoppingListContainer');
+        if (!container) return;
+        const items = getShopping();
+        if (items.length === 0) {
+          container.innerHTML = '<p class="text-muted">Список покупок пуст.</p>';
+          return;
+        }
+        const groups = {};
+        items.forEach(item => {
+          const cat = item.category || 'Прочее';
+          if (!groups[cat]) groups[cat] = [];
+          groups[cat].push(item);
+        });
+        let html = '';
+        for (const [cat, list] of Object.entries(groups)) {
+          html += `<div class="card"><h4>${cat}</h4>`;
+          list.forEach(item => {
+            const checked = item.purchased ? 'checked' : '';
+            const cls = item.purchased ? 'purchased' : '';
+            html += `
+              <div class="shopping-item" data-item-id="${item.id}">
+                <input type="checkbox" ${checked} class="shopping-checkbox">
+                <span class="${cls}">${item.name} — ${item.quantity}</span>
+              </div>
+            `;
+          });
+          html += '</div>';
+        }
+        container.innerHTML = html;
+        document.querySelectorAll('.shopping-checkbox').forEach(cb => {
+          cb.addEventListener('change', function() {
+            const id = this.closest('.shopping-item').dataset.itemId;
+            let items = getShopping();
+            const idx = items.findIndex(i => i.id === id);
+            if (idx !== -1) {
+              items[idx].purchased = !items[idx].purchased;
+              saveShopping(items);
+              renderShoppingList();
+            }
+          });
+        });
+      }
+
+      // --- Уведомления ---
+      function showNotification(msg) {
+        const existing = document.querySelector('.custom-notification');
+        if (existing) existing.remove();
+        const note = document.createElement('div');
+        note.className = 'custom-notification';
+        note.textContent = msg;
+        note.style.cssText = `
+          position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+          background: var(--primary, #4CAF50); color: #fff; padding: 12px 24px;
+          border-radius: 8px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          font-weight: 500;
+        `;
+        document.body.appendChild(note);
+        setTimeout(() => {
+          note.style.opacity = '0';
+          note.style.transition = 'opacity 0.3s';
+          setTimeout(() => note.remove(), 300);
+        }, 2000);
+      }
+
+      // --- Инициализация ---
+      function init() {
+        document.querySelectorAll('.recipe-card').forEach(card => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-favorite';
+          btn.style.cssText = 'background:none; border:none; font-size:1.2rem; cursor:pointer; margin-top:4px;';
+          const id = card.dataset.recipeId;
+          if (!id) return;
+          btn.textContent = getFavorites().includes(id) ? '❤️' : '🤍';
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleFavorite(id, btn);
+          });
+          const title = card.querySelector('h4');
+          if (title) title.parentNode.insertBefore(btn, title.nextSibling);
+        });
+
+        document.querySelectorAll('.add-to-plan').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.dataset.recipeId;
+            if (!id) return;
+            const day = prompt('День (Понедельник, Вторник, ...)');
+            if (!day) return;
+            const meal = prompt('Приём пищи (Завтрак, Обед, Ужин)') || 'Обед';
+            addToPlanner(id, day.trim(), meal);
+          });
+        });
+
+        renderPlanner();
+        generateShoppingList();
+        renderFavorites();
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+    })();
+  </script>
+
+</body>
+</html>
