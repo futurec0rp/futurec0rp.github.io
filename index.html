@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dish Diary — Ваш кулинарный дневник</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <style>
+    :root {
+      --primary: #E07856;
+      --primary-dark: #C25E40;
+      --secondary: #4A7C59;
+      --bg: #FDFCF8;
+      --card-bg: #FFFFFF;
+      --text: #2D2A26;
+      --text-muted: #8A847C;
+      --shadow: 0 10px 30px rgba(45, 42, 38, 0.06);
+      --shadow-hover: 0 15px 40px rgba(45, 42, 38, 0.1);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --font-heading: 'Playfair Display', Georgia, serif;
+      --font-body: 'Nunito', 'Helvetica Neue', Arial, sans-serif;
+      --footer-bg: #2D2A26;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: var(--font-body); }
+
+    /* Header */
+    .header {
+      background: rgba(253, 252, 248, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 0 24px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 70px;
+    }
+    .logo a {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .logo i { color: var(--secondary); }
+
+    .nav { display: flex; align-items: center; gap: 1.5rem; }
+    .nav-link {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .account-dropdown { position: relative; cursor: pointer; }
+    .avatar-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      background: var(--text);
+      color: #fff;
+      font-weight: 600; font-size: 0.9rem;
+      transition: 0.2s;
+    }
+    .avatar-btn:hover { background: var(--primary); }
+    .dropdown-menu {
+      position: absolute; right: 0; top: calc(100% + 10px);
+      background: var(--card-bg);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-hover);
+      min-width: 220px;
+      padding: 0.5rem;
+      opacity: 0; visibility: hidden; transform: translateY(-10px);
+      transition: 0.2s;
+      z-index: 50;
+    }
+    .account-dropdown:hover .dropdown-menu, .account-dropdown:focus-within .dropdown-menu {
+      opacity: 1; visibility: visible; transform: translateY(0);
+    }
+    .dropdown-menu a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0.7rem 1rem;
+      font-size: 0.95rem; font-weight: 600;
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .dropdown-menu a:hover { background: var(--bg); color: var(--primary); }
+    .dropdown-menu a i { width: 20px; text-align: center; color: var(--text-muted); }
+
+    .burger { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text); cursor: pointer; }
+
+    /* Layout */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 90px 24px 60px;
+    }
+    
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, rgba(224, 120, 86, 0.9), rgba(74, 124, 89, 0.8)), url('images/background.jpg') center/cover;
+      border-radius: 24px;
+      padding: 5rem 3rem;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 3rem;
+      box-shadow: var(--shadow);
+    }
+    .hero h1 { font-family: var(--font-heading); font-size: 3rem; font-weight: 700; margin-bottom: 1rem; }
+    .hero p { font-size: 1.2rem; opacity: 0.95; max-width: 600px; margin: 0 auto 2rem; }
+    .btn-primary {
+      background: #fff; color: var(--primary-dark);
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 0.8rem 2.5rem; border-radius: 50px; font-size: 0.9rem;
+      transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: inline-block; border: none; cursor: pointer;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+
+    /* Search */
+    .search-container { margin: 2rem 0; position: relative; }
+    .search-input {
+      width: 100%; padding: 1rem 1.5rem 1rem 3rem;
+      border: 2px solid #eee;
+      border-radius: 50px; font-size: 1rem;
+      transition: 0.3s; background: var(--card-bg);
+      font-family: var(--font-body);
+    }
+    .search-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(224, 120, 86, 0.1); }
+    .search-icon { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+    /* Cards */
+    .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; }
+    .section-title { font-family: var(--font-heading); font-size: 2rem; font-weight: 700; color: var(--text); }
+    
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+    .card {
+      background: var(--card-bg); border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--shadow);
+      transition: 0.3s; border: 1px solid rgba(0,0,0,0.02);
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+    
+    .card-thumb { height: 200px; overflow: hidden; position: relative; background: #eee; display: flex; align-items: center; justify-content: center; }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+    .card:hover .card-thumb img { transform: scale(1.05); }
+    
+    .fav-btn {
+      position: absolute; top: 15px; right: 15px;
+      background: rgba(255,255,255,0.9); border: none;
+      width: 40px; height: 40px; border-radius: 50%;
+      cursor: pointer; font-size: 1rem; color: #888;
+      transition: 0.2s; display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+    }
+    .fav-btn:hover { transform: scale(1.1); color: var(--primary); }
+    .fav-btn.active { color: var(--primary); background: #fff; }
+
+    .card-body { padding: 1.5rem; }
+    .card-meta { display: flex; gap: 1rem; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; }
+    .card-meta span i { margin-right: 4px; color: var(--secondary); }
+    .card-title { font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 1rem; }
+    
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 2px solid var(--text); color: var(--text);
+      padding: 0.5rem 1.2rem; border-radius: 50px;
+      font-weight: 600; font-size: 0.85rem; transition: 0.2s;
+      cursor: pointer; background: transparent;
+    }
+    .btn-outline:hover { background: var(--text); color: #fff; }
+
+    /* Recipe Detail */
+    .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 1.5rem; color: var(--text-muted); font-weight: 600; cursor: pointer; background: transparent; border: none; font-size: 1rem; font-family: var(--font-body); }
+    .back-link:hover { color: var(--primary); }
+    .recipe-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    .detail-img { border-radius: var(--radius); overflow: hidden; height: 400px; box-shadow: var(--shadow); background: #eee; }
+    .detail-img img { width: 100%; height: 100%; object-fit: cover; }
+    .badge-group { display: flex; gap: 0.5rem; margin: 1rem 0 2rem; flex-wrap: wrap; }
+    .badge { background: var(--bg); padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; border: 1px solid #eee; }
+    
+    .ingredient-list { list-style: none; margin: 1.5rem 0; }
+    .ingredient-list li { padding: 0.8rem 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600; }
+    .step-list { list-style: none; counter-reset: step; margin: 1.5rem 0; }
+    .step-list li { counter-increment: step; padding: 1rem 1rem 1rem 3rem; position: relative; margin-bottom: 1rem; background: var(--bg); border-radius: var(--radius-sm); }
+    .step-list li::before { content: counter(step); position: absolute; left: 1rem; top: 1rem; background: var(--primary); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; }
+
+    /* Planner */
+    .planner-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+    .planner-day { background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border-top: 4px solid var(--secondary); }
+    .planner-day h4 { font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 1rem; }
+    .planner-meal { background: var(--bg); padding: 0.8rem; border-radius: var(--radius-sm); margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+    .planner-meal small { display: block; color: var(--primary); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+    .remove-planner { background: none; border: none; color: #d32f2f; cursor: pointer; font-size: 1rem; opacity: 0.6; transition: 0.2s; }
+    .remove-planner:hover { opacity: 1; }
+    .add-to-plan-select { margin-top: 1rem; width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: var(--radius-sm); font-family: var(--font-body); }
+
+    /* Shopping & Favorites */
+    .shopping-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius-sm); margin-bottom: 0.5rem; box-shadow: var(--shadow); }
+    .shopping-item input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
+    .shopping-item.purchased span { text-decoration: line-through; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 4rem 2rem; background: var(--card-bg); border-radius: var(--radius); border: 2px dashed #ddd; grid-column: 1 / -1; }
+    .empty-state i { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+    /* Settings */
+    .settings-card { background: var(--card-bg); padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow); max-width: 500px; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #eee; }
+    .switch { position: relative; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background: #ccc; transition: .3s; border-radius: 26px; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background: var(--primary); }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    /* Footer */
+    .footer { background: var(--footer-bg); color: rgba(255,255,255,0.7); padding: 4rem 2rem 2rem; margin-top: 4rem; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; }
+    .footer-brand h3 { font-family: var(--font-heading); font-size: 1.8rem; color: #fff; margin-bottom: 1rem; }
+    .footer-links h4 { color: #fff; margin-bottom: 1rem; font-size: 1.1rem; font-family: var(--font-heading); }
+    .footer-links a { display: block; padding: 0.3rem 0; transition: 0.2s; cursor: pointer; }
+    .footer-links a:hover { color: var(--primary); padding-left: 5px; }
+    .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .recipe-detail { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav { display: none; position: absolute; top: 70px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 1rem; box-shadow: var(--shadow-hover); gap: 0.5rem; }
+      .nav.active { display: flex; }
+      .nav-link { width: 100%; padding: 1rem; border-radius: var(--radius-sm); }
+      .nav-link:hover { background: var(--bg); border-bottom: none; }
+      .account-dropdown { width: 100%; }
+      .avatar-btn { width: 100%; justify-content: center; margin-top: 0.5rem; }
+      .burger { display: block; }
+      .hero { padding: 3rem 1.5rem; }
+      .hero h1 { font-size: 2rem; }
+      .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <!-- Заменили иконку на эмодзи 🍽️ -->
+      <div class="logo"><a data-route="home"><span style="font-size: 1.4rem;">🍽️</span> Dish Diary</a></div>
+      <nav class="nav" id="mainNav">
+        <a class="nav-link" data-route="home">Главная</a>
+        <a class="nav-link" data-route="recipes">Рецепты</a>
+        <a class="nav-link" data-route="blog">Блог</a>
+        <a class="nav-link" data-route="planner">Планировщик</a>
+        <div class="account-dropdown">
+          <div class="avatar-btn"><i class="fas fa-user"></i> Профиль <i class="fas fa-chevron-down"></i></div>
+          <div class="dropdown-menu">
+            <a data-route="shopping"><i class="fas fa-cart-shopping"></i> Список покупок</a>
+            <a data-route="favorites"><i class="fas fa-heart"></i> Избранное</a>
+            <a data-route="my-recipes"><i class="fas fa-book"></i> Мои рецепты</a>
+            <a data-route="settings"><i class="fas fa-cog"></i> Настройки</a>
+          </div>
+        </div>
+      </nav>
+      <button class="burger" id="burgerBtn"><i class="fas fa-bars"></i></button>
+    </div>
+  </header>
+
+  <main class="container" id="app">
+    <div style="text-align:center; padding: 100px 20px;">
+      <h2>Загрузка...</h2>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h3>Dish Diary</h3>
+        <p>Ваш личный кулинарный дневник. Планируйте меню, создавайте рецепты и наслаждайтесь вкусной едой каждый день.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Навигация</h4>
+        <a data-route="home">Главная</a>
+        <a data-route="recipes">Рецепты</a>
+        <a data-route="blog">Блог</a>
+        <a data-route="planner">Планировщик</a>
+      </div>
+      <div class="footer-links">
+        <h4>Кабинет</h4>
+        <a data-route="shopping">Список покупок</a>
+        <a data-route="favorites">Избранное</a>
+        <a data-route="settings">Настройки</a>
+      </div>
+      <div class="footer-links">
+        <h4>Информация</h4>
+        <a data-route="home">О проекте</a>
+        <a data-route="home">Политика</a>
+        <a data-route="home">Контакты</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Dish Diary. Создано с любовью к еде.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // --- Данные ---
+      const STORAGE = {
+        favorites: 'dish_favorites',
+        planner: 'dish_planner',
+        shopping: 'dish_shopping',
+      };
+
+      const memoryStore = { favorites: [], planner: [], shopping: [] };
+      function getData(key) {
+        try {
+          const data = localStorage.getItem(STORAGE[key]);
+          return data ? JSON.parse(data) : [];
+        } catch (e) {
+          return memoryStore[key] || [];
+        }
+      }
+      function saveData(key, data) {
+        try {
+          localStorage.setItem(STORAGE[key], JSON.stringify(data));
+        } catch (e) {
+          memoryStore[key] = data;
+        }
+      }
+
+      // Ваши оригинальные пути к картинкам
+      const recipes = [
+        { id: 'chicken', title: 'Курица с лимоном', cat: 'Основные блюда', time: '25 мин', img: 'images/chiken.jpg', desc: 'Сочное куриное филе, маринованное в лимонном соке с чесноком и розмарином.', ings: [{name:'Куриное филе', qty:'600 г'}, {name:'Лимон', qty:'1 шт'}, {name:'Чеснок', qty:'3 зубчика'}, {name:'Оливковое масло', qty:'2 ст.л.'}] },
+        { id: 'shrimp', title: 'Капуста с креветками', cat: 'Основные блюда', time: '30 мин', img: 'images/Shrimps.jpg', desc: 'Легкое и питательное блюдо с морепродуктами.', ings: [{name:'Креветки', qty:'300 г'}, {name:'Пекинская капуста', qty:'1 кочан'}] },
+        { id: 'avocado', title: 'Тост с авокадо', cat: 'Завтраки', time: '15 мин', img: 'images/avo.jpg', desc: 'Идеальное начало дня.', ings: [{name:'Авокадо', qty:'1 шт'}, {name:'Хлеб', qty:'2 ломтика'}] },
+        { id: 'chicken-soup', title: 'Куриный суп с лапшой', cat: 'Супы', time: '45 мин', img: 'images/soup.jpg', desc: 'Согревающий бульон.', ings: [{name:'Курица', qty:'500 г'}, {name:'Лапша', qty:'100 г'}] },
+        { id: 'salad', title: 'Салат с киноа и овощами', cat: 'Салаты', time: '20 мин', img: 'images/salad.jpg', desc: 'Полезный салат богатый белком.', ings: [{name:'Киноа', qty:'100 г'}, {name:'Овощи', qty:'по вкусу'}] },
+        { id: 'salmon', title: 'Запечённый лосось с овощами', cat: 'Основные блюда', time: '35 мин', img: 'images/Salmon.jpg', desc: 'Омега-3 в каждой порции.', ings: [{name:'Лосось', qty:'400 г'}, {name:'Лимон', qty:'1 шт'}] },
+        { id: 'pasta', title: 'Паста с креветками и шпинатом', cat: 'Основные блюда', time: '30 мин', img: 'images/pasta.jpg', desc: 'Итальянская классика.', ings: [{name:'Паста', qty:'300 г'}, {name:'Креветки', qty:'200 г'}] },
+        { id: 'cookies', title: 'Овсяное печенье с шоколадом', cat: 'Десерты', time: '35 мин', img: 'images/cookies.jpg', desc: 'Сладко и полезно.', ings: [{name:'Овсяные хлопья', qty:'200 г'}, {name:'Шоколад', qty:'50 г'}] },
+        { id: 'burger', title: 'Веганский бургер с фалафелем', cat: 'Основные блюда', time: '40 мин', img: 'images/burger.jpg', desc: 'Сочный постный бургер.', ings: [{name:'Нут', qty:'200 г'}, {name:'Булочка', qty:'1 шт'}] },
+        { id: 'fruit-salad', title: 'Фруктовый салат с мятой', cat: 'Десерты', time: '10 мин', img: 'images/fruit.jpg', desc: 'Витаминный заряд.', ings: [{name:'Фрукты', qty:'400 г'}, {name:'Мята', qty:'по вкусу'}] }
+      ];
+
+      const blogPosts = [
+        { title: '5 быстрых завтраков на каждый день', text: 'Начните день правильно с нашей подборки.', date: '12 мая 2024', author: 'User' },
+        { title: 'Как питаться сезонно весной', text: 'Польза сезонных продуктов для вашего стола.', date: '8 мая 2024', author: 'Мария' },
+        { title: 'Здоровые десерты без выпечки', text: 'Сладкое может быть полезным!', date: '5 мая 2024', author: 'Алексей' },
+        { title: 'Топ-10 специй для здоровья', text: 'Как улучшить вкус блюд и укрепить иммунитет.', date: '2 мая 2024', author: 'Елена' }
+      ];
+
+      const plannerDays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+
+      // --- Routing ---
+      const app = document.getElementById('app');
+      const navLinks = document.querySelectorAll('[data-route]');
+
+      function router() {
+        try {
+          const route = window.location.hash.substring(1) || 'home';
+          document.getElementById('mainNav').classList.remove('active');
+
+          if (route.startsWith('recipe-')) {
+            renderRecipeDetail(route);
+          } else if (route === 'home') {
+            renderHome();
+          } else if (route === 'recipes') {
+            renderRecipes();
+          } else if (route === 'blog') {
+            renderBlog();
+          } else if (route === 'planner') {
+            renderPlanner();
+          } else if (route === 'shopping') {
+            renderShopping();
+          } else if (route === 'favorites') {
+            renderFavorites();
+          } else if (route === 'my-recipes') {
+            renderMyRecipes();
+          } else if (route === 'settings') {
+            renderSettings();
+          } else {
+            renderHome();
+          }
+
+          navLinks.forEach(link => {
+            const linkRoute = link.getAttribute('data-route');
+            link.classList.toggle('active', linkRoute === route);
+          });
+          
+          window.scrollTo(0, 0);
+        } catch (err) {
+          console.error("Routing Error:", err);
+          app.innerHTML = `<div style="padding: 2rem; color: red;">Ошибка: ${err.message}</div>`;
+        }
+      }
+
+      document.body.addEventListener('click', function(e) {
+        const target = e.target.closest('[data-route]');
+        if (target) {
+          e.preventDefault();
+          const route = target.getAttribute('data-route');
+          window.location.hash = route;
+        }
+      });
+
+      // --- UI Render Functions ---
+      function renderHome() {
+        app.innerHTML = `
+          <section class="hero">
+            <h1>Добро пожаловать в Dish Diary</h1>
+            <p>Найдите вдохновение для вкусного дня. Планируйте, готовьте и наслаждайтесь.</p>
+            <button class="btn-primary" data-route="recipes">Смотреть рецепты</button>
+          </section>
+          
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск по названию или категории..." />
+          </div>
+
+          <div class="section-header">
+            <h2 class="section-title">Популярные рецепты</h2>
+          </div>
+          <div class="card-grid" id="popularGrid"></div>
+
+          <div class="section-header" style="margin-top: 3rem;">
+            <h2 class="section-title">Свежее из блога</h2>
+          </div>
+          <div class="card-grid" id="blogGridHome"></div>
+        `;
+
+        renderRecipeCards('popularGrid', recipes);
+        renderBlogCards('blogGridHome', blogPosts.slice(0, 3));
+        
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const filtered = recipes.filter(r => r.title.toLowerCase().includes(term) || r.cat.toLowerCase().includes(term));
+            renderRecipeCards('popularGrid', filtered);
+          });
+        }
+      }
+
+      function renderRecipes() {
+        app.innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title">Все рецепты</h2>
+          </div>
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Поиск рецептов..." />
+          </div>
+          <div class="card-grid" id="recipesGrid"></div>
+        `;
+        renderRecipeCards('recipesGrid', recipes);
+        
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const filtered = recipes.filter(r => r.title.toLowerCase().includes(term) || r.cat.toLowerCase().includes(term));
+            renderRecipeCards('recipesGrid', filtered);
+          });
+        }
+      }
+
+      function renderRecipeCards(containerId, list) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const favorites = getData('favorites');
+        
+        if (list.length === 0) {
+          container.innerHTML = `<div class="empty-state"><i class="fas fa-utensils"></i><p>Ничего не найдено.</p></div>`;
+          return;
+        }
+
+        container.innerHTML = list.map(r => `
+          <div class="card">
+            <div class="card-thumb">
+              <img src="${r.img}" alt="${r.title}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/E07856/ffffff?text=${encodeURIComponent(r.title)}';">
+              <button class="fav-btn ${favorites.includes(r.id) ? 'active' : ''}" data-fav-id="${r.id}">
+                <i class="fas fa-heart"></i>
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span><i class="fas fa-tag"></i> ${r.cat}</span>
+                <span><i class="fas fa-clock"></i> ${r.time}</span>
+              </div>
+              <h3 class="card-title">${r.title}</h3>
+              <button class="btn-outline" data-route="recipe-${r.id}">Подробнее <i class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderBlogCards(containerId, list) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = list.map(b => `
+          <div class="card">
+            <div class="card-body">
+              <div class="card-meta">
+                <span><i class="fas fa-user"></i> ${b.author}</span>
+                <span><i class="fas fa-calendar"></i> ${b.date}</span>
+              </div>
+              <h3 class="card-title">${b.title}</h3>
+              <p style="color: var(--text-muted); margin-bottom: 1rem;">${b.text}</p>
+              <button class="btn-outline" data-route="blog">Читать <i class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderRecipeDetail(routeId) {
+        const recipeId = routeId.split('-')[1];
+        const recipe = recipes.find(r => r.id === recipeId);
+        if (!recipe) { renderHome(); return; }
+
+        app.innerHTML = `
+          <button class="back-link" data-route="recipes"><i class="fas fa-arrow-left"></i> Назад к рецептам</button>
+          <div class="recipe-detail">
+            <div>
+              <div class="detail-img">
+                <img src="${recipe.img}" alt="${recipe.title}" onerror="this.onerror=null; this.src='https://placehold.co/800x600/E07856/ffffff?text=${encodeURIComponent(recipe.title)}';">
+              </div>
+              <div class="badge-group">
+                <span class="badge">${recipe.cat}</span>
+                <span class="badge"><i class="fas fa-clock"></i> ${recipe.time}</span>
+              </div>
+              <h2 class="section-title">${recipe.title}</h2>
+              <p style="color: var(--text-muted);">${recipe.desc}</p>
+              
+              <h3 style="margin-top: 2rem; font-family: var(--font-heading);">Ингредиенты</h3>
+              <ul class="ingredient-list">
+                ${recipe.ings.map(i => `<li><span>${i.name}</span> <span>${i.qty}</span></li>`).join('')}
+              </ul>
+            </div>
+            <div>
+              <h3 style="font-family: var(--font-heading); margin-bottom: 1rem;">Пошаговый рецепт</h3>
+              <ol class="step-list">
+                <li>Подготовьте все ингредиенты по списку.</li>
+                <li>Следите за температурным режимом, чтобы сохранить вкус.</li>
+                <li>Смешайте ингредиенты согласно вашему вкусу.</li>
+                <li>Подавайте блюдо красиво украшенным. Приятного аппетита!</li>
+              </ol>
+              
+              <div style="margin-top: 2rem; background: var(--bg); padding: 1.5rem; border-radius: var(--radius);">
+                <h4 style="margin-bottom: 1rem;">Добавить в план на неделю:</h4>
+                <select class="add-to-plan-select" id="daySelect">
+                  ${plannerDays.map(d => `<option value="${d}">${d}</option>`).join('')}
+                </select>
+                <select class="add-to-plan-select" id="mealSelect" style="margin-top: 0.5rem;">
+                  <option>Завтрак</option>
+                  <option>Обед</option>
+                  <option>Ужин</option>
+                </select>
+                <button class="btn-primary" style="margin-top: 1rem; width: 100%;" id="addToPlanBtn">
+                  <i class="fas fa-plus"></i> Добавить в план
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const addBtn = document.getElementById('addToPlanBtn');
+        if (addBtn) {
+          addBtn.addEventListener('click', () => {
+            const day = document.getElementById('daySelect').value;
+            const meal = document.getElementById('mealSelect').value;
+            addToPlanner(recipe.id, day, meal);
+          });
+        }
+      }
+
+      function renderPlanner() {
+        const planner = getData('planner');
+        app.innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title">Планировщик меню</h2>
+          </div>
+          <div class="planner-grid" id="plannerGrid"></div>
+        `;
+
+        const grid = document.getElementById('plannerGrid');
+        if (!grid) return;
+
+        grid.innerHTML = plannerDays.map(day => {
+          const meals = planner.filter(m => m.day === day);
+          return `
+            <div class="planner-day">
+              <h4>${day}</h4>
+              ${meals.length === 0 ? '<p style="color:var(--text-muted);font-size:0.9rem;">Нет блюд</p>' : meals.map(m => `
+                <div class="planner-meal">
+                  <div>
+                    <small>${m.mealType}</small>
+                    ${recipes.find(r => r.id === m.recipeId)?.title || 'Рецепт'}
+                  </div>
+                  <button class="remove-planner" data-remove-id="${m.id}"><i class="fas fa-times"></i></button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderShopping() {
+        const items = getData('shopping');
+        app.innerHTML = `
+          <button class="back-link" data-route="planner"><i class="fas fa-arrow-left"></i> Назад к плану</button>
+          <div class="section-header">
+            <h2 class="section-title">Список покупок</h2>
+          </div>
+          <div id="shoppingList"></div>
+        `;
+
+        const container = document.getElementById('shoppingList');
+        if (!container) return;
+
+        if (items.length === 0) {
+          container.innerHTML = `<div class="empty-state"><i class="fas fa-cart-shopping"></i><p>Ваш список покупок пуст.<br>Добавьте рецепты в планировщик.</p></div>`;
+          return;
+        }
+
+        container.innerHTML = items.map(item => `
+          <div class="shopping-item ${item.purchased ? 'purchased' : ''}" data-shop-id="${item.id}">
+            <input type="checkbox" ${item.purchased ? 'checked' : ''} class="shop-check">
+            <span>${item.name} <small style="color:var(--text-muted)">(${item.qty})</small></span>
+          </div>
+        `).join('');
+      }
+
+      function renderFavorites() {
+        const favorites = getData('favorites');
+        app.innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title">Избранное</h2>
+          </div>
+          <div class="card-grid" id="favGrid"></div>
+        `;
+        const favRecipes = recipes.filter(r => favorites.includes(r.id));
+        renderRecipeCards('favGrid', favRecipes);
+        
+        if (favRecipes.length === 0) {
+          const grid = document.getElementById('favGrid');
+          if(grid) grid.innerHTML = `<div class="empty-state"><i class="fas fa-heart-broken"></i><p>Здесь пока пусто.</p></div>`;
+        }
+      }
+
+      function renderBlog() {
+        app.innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title">Кулинарный блог</h2>
+          </div>
+          <div class="card-grid" id="blogGrid"></div>
+        `;
+        renderBlogCards('blogGrid', blogPosts);
+      }
+
+      function renderMyRecipes() {
+        app.innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title">Мои рецепты</h2>
+          </div>
+          <div class="card-grid" id="myRecipesGrid"></div>
+        `;
+        renderRecipeCards('myRecipesGrid', recipes.slice(2, 6));
+      }
+
+      function renderSettings() {
+        app.innerHTML = `
+          <div class="section-header">
+            <h2 class="section-title">Настройки</h2>
+          </div>
+          <div class="settings-card">
+            <div class="setting-row">
+              <span>Тёмная тема</span>
+              <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <span>Email уведомления</span>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <span>Язык интерфейса</span>
+              <select style="padding: 0.5rem; border-radius: 8px; border: 1px solid #ddd; font-family: var(--font-body);">
+                <option>Русский</option>
+                <option>English</option>
+              </select>
+            </div>
+          </div>
+        `;
+      }
+
+      // --- Actions ---
+      document.body.addEventListener('click', function(e) {
+        const favBtn = e.target.closest('[data-fav-id]');
+        if (favBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          const id = favBtn.getAttribute('data-fav-id');
+          toggleFavorite(id);
+          favBtn.classList.toggle('active');
+          return;
+        }
+
+        const removeBtn = e.target.closest('[data-remove-id]');
+        if (removeBtn) {
+          const id = parseFloat(removeBtn.getAttribute('data-remove-id'));
+          removeFromPlanner(id);
+          return;
+        }
+      });
+
+      document.body.addEventListener('change', function(e) {
+        if (e.target.classList.contains('shop-check')) {
+          const itemDiv = e.target.closest('[data-shop-id]');
+          const id = itemDiv.getAttribute('data-shop-id');
+          togglePurchased(id);
+        }
+      });
+
+      function toggleFavorite(id) {
+        let favorites = getData('favorites');
+        const idx = favorites.indexOf(id);
+        if (idx === -1) favorites.push(id); else favorites.splice(idx, 1);
+        saveData('favorites', favorites);
+        showNotification(favorites.includes(id) ? 'Добавлено в избранное' : 'Удалено из избранного');
+      }
+
+      function addToPlanner(recipeId, day, mealType) {
+        const planner = getData('planner');
+        planner.push({ id: Date.now(), recipeId, day, mealType });
+        saveData('planner', planner);
+        generateShoppingList();
+        showNotification('Рецепт добавлен в план!');
+        window.location.hash = 'planner';
+      }
+
+      function removeFromPlanner(id) {
+        let planner = getData('planner').filter(p => p.id !== id);
+        saveData('planner', planner);
+        generateShoppingList();
+        renderPlanner();
+      }
+
+      function generateShoppingList() {
+        const planner = getData('planner');
+        let shopping = [];
+        planner.forEach(p => {
+          const recipe = recipes.find(r => r.id === p.recipeId);
+          if (recipe) {
+            recipe.ings.forEach(ing => {
+              if (!shopping.find(s => s.name === ing.name)) {
+                shopping.push({ id: Date.now() + Math.random(), name: ing.name, qty: ing.qty, purchased: false });
+              }
+            });
+          }
+        });
+        saveData('shopping', shopping);
+      }
+
+      function togglePurchased(id) {
+        let items = getData('shopping');
+        const item = items.find(i => String(i.id) === String(id));
+        if (item) item.purchased = !item.purchased;
+        saveData('shopping', items);
+        renderShopping();
+      }
+
+      function showNotification(msg) {
+        const old = document.querySelector('.notification');
+        if (old) old.remove();
+        const note = document.createElement('div');
+        note.className = 'notification';
+        note.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+        note.style.cssText = `position:fixed;bottom:20px;left:20px;background:var(--text);color:#fff;padding:1rem 1.5rem;border-radius:8px;z-index:9999;box-shadow:var(--shadow-hover);font-weight:600;display:flex;align-items:center;gap:10px;`;
+        document.body.appendChild(note);
+        setTimeout(() => { note.style.opacity = '0'; note.style.transition = '0.3s'; setTimeout(() => note.remove(), 300); }, 2000);
+      }
+
+      document.getElementById('burgerBtn').addEventListener('click', () => {
+        document.getElementById('mainNav').classList.toggle('active');
+      });
+
+      window.addEventListener('hashchange', router);
+      router();
+    })();
+  </script>
+</body>
+</html>
